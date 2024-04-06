@@ -11,17 +11,16 @@ const USER_REGEX = /^[A-z]{3,20}$/
 const PWD_REGEX = /^[A-z0-9!@#$%]{4,12}$/
 
 const EditUser = () => {
-
+    const [updating, setUpdating] = useState(false);
+    
     const dispatch = useDispatch();
-    const {id} = useParams();
     const navigate = useNavigate();
 
-
+    const {id} = useParams();
 
     const {users} = useSelector(state => state.users);
+
     const user = users.find(user => user._id === id);
-
-
 
     const [username, setUsername] = useState(user.username)
     const [validUsername, setValidUsername] = useState(false)
@@ -55,15 +54,19 @@ const EditUser = () => {
     const onSaveUserClicked = async (e) => {
         if (password) {
            try {
-            dispatch(editUser({ id: user._id, username, password, roles, active })).unwrap();
+            setUpdating(true)
+            await dispatch(editUser({ id: user._id, username, password, roles, active })).unwrap();
+            setUpdating(false)
             navigate(-1);
            } catch (error) {
             console.log(error);
            }
         } else {
             try {
-               dispatch(editUser({ id: user._id, username, roles, active })).unwrap();
-               navigate('/dash/users')
+                setUpdating(true)
+                await dispatch(editUser({ id: user._id, username, roles, active })).unwrap();
+                setUpdating(false)
+                navigate('/dash/users')
                } catch (error) {
                 console.log(error);
                }
@@ -105,7 +108,7 @@ const EditUser = () => {
    
 
 
-    const content = (
+    let content = (
         <>
 
 
@@ -182,6 +185,8 @@ const EditUser = () => {
             </form>
         </>
     )
+
+    if(updating) content = "Loading"
 
     return content
 }

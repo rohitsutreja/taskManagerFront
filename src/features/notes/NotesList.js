@@ -2,9 +2,19 @@ import { useEffect } from "react";
 import Note from "./Note";
 import { getNotes } from "./noteSlice";
 import { useDispatch, useSelector } from "react-redux";
+import useAuth from "../../hooks/useAuth";
 
 const NotesList = () => {
   const dispatch = useDispatch();
+
+  const { username , roles } = useAuth()
+
+
+  let status = "Employee"
+
+  if(roles.includes("Manager")) status = "Manager"
+  if(roles.includes("Admin")) status = "Admin"
+
 
   useEffect(() => {
     dispatch(getNotes());
@@ -16,7 +26,6 @@ const NotesList = () => {
 
   let content;
 
-  console.log(notes);
   if (isError) {
     content = <p>Error</p>;
   }
@@ -26,9 +35,25 @@ const NotesList = () => {
   console.log(isLoading);
 
   if (isSuccess) {
-    const tableContent = notes.map((note) => (
+
+    let notesList;
+    if(status === "Employee"){
+      notesList = notes.filter((note) => (
+        note.username === username
+       ));
+    }
+    else{
+      notesList = notes
+    }
+    
+
+
+    const tableContent = notesList.map((note) => (
       <Note key={note._id} note={note} />
     ));
+
+
+
 
     content = (
       <table className="table table--notes">

@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/api";
 
 const URL = "http://localhost:5000";
+
 const initialState = {
   notes: [],
   isLoading: true,
@@ -10,26 +11,26 @@ const initialState = {
 };
 
 export const getNotes = createAsyncThunk("notes/getNotes", async () => {
-  const response = await api.get(`${URL}/notes`);
+  const response = await api.get(`${URL}/notes/`);
   return response.data;
 });
 
 export const editNote = createAsyncThunk(
   "notes/editNote",
   async (updatatedNoteData) => {
-    const response = await api.patch(`${URL}/notes`, updatatedNoteData);
+    const response = await api.patch(`${URL}/notes/`, updatatedNoteData);
     return response.data;
   }
 );
 
 export const addNote = createAsyncThunk("notes/addNote", async (note) => {
-  const response = await api.post(`${URL}/notes`, note);
+  const response = await api.post(`${URL}/notes/`, note);
   return response.data;
 });
 
 export const deleteNote = createAsyncThunk("notes/deleteNote", async (note) => {
     console.log(note._id+ "123456")
-    const response = await api.delete(`${URL}/notes`, {data:{ id : note._id}});
+    const response = await api.delete(`${URL}/notes/`, {data:{ id : note._id}});
     return response.data;
   });
 

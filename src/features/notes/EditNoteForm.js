@@ -12,16 +12,16 @@ const EditNoteForm = ({ note, users }) => {
   // const isManager = true;
   // const isAdmin = true;
 
+  const [updating, setUpdating] = useState(false);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [title, setTitle] = useState(note.title);
   const [text, setText] = useState(note.text);
   const [completed, setCompleted] = useState(note.completed);
   const [userId, setUserId] = useState(note.user);
-  const[reqSent, setReqSent] = useState("idle");
-
-  const dispatch = useDispatch()
-
+  const [reqSent, setReqSent] = useState("idle");
 
   const onTitleChanged = (e) => setTitle(e.target.value);
   const onTextChanged = (e) => setText(e.target.value);
@@ -34,7 +34,9 @@ const EditNoteForm = ({ note, users }) => {
     if (canSave) {
       try {
         setReqSent('pending')
-        dispatch(editNote({ id: note._id, user: userId, title, text, completed })).unwrap()
+        setUpdating(true);
+        await dispatch(editNote({ id: note._id, user: userId, title, text, completed })).unwrap()
+        setUpdating(false)
         setTitle("");
         setText("");
         setUserId("");
@@ -51,7 +53,8 @@ const EditNoteForm = ({ note, users }) => {
   const onDeleteNoteClicked = async () => {
     try {
       setReqSent('pending')
-      dispatch(deleteNote(note)).unwrap();
+
+      await dispatch(deleteNote(note)).unwrap();
       setTitle("");
       setText("");
       setUserId("");
@@ -107,7 +110,7 @@ const EditNoteForm = ({ note, users }) => {
     );
   }
 
-  const content = (
+  let content = (
     <>
       {/* <p className={errClass}>{error}</p> */}
 
@@ -198,6 +201,9 @@ const EditNoteForm = ({ note, users }) => {
       </form>
     </>
   );
+
+
+  if(updating) content = "Loading";
 
   return content;
 };

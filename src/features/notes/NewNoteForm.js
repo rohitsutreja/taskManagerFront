@@ -25,7 +25,7 @@ const NewNoteForm = ({ users }) => {
         e.preventDefault()
         if (canSave) {
         try{
-            dispatch(addNote({ user: userId, title, text })).unwrap()
+           await dispatch(addNote({ user: userId, title, text })).unwrap()
         }catch(error){
             console.log(error.message)
         }

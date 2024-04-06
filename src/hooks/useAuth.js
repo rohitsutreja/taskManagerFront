@@ -3,15 +3,21 @@ import { selectCurrentToken } from "../features/auth/authSlice"
 import jwtDecode from 'jwt-decode'
 
 const useAuth = () => {
+
     const token = useSelector(selectCurrentToken)
+   
     let isManager = false
     let isAdmin = false
     let status = "Employee"
 
     if (token) {
+        
         const decoded = jwtDecode(token)
-        const { username, roles } = decoded.UserInfo
 
+        console.log(decoded.UserInfo)
+        
+        const { username, roles } = JSON.parse(decoded.UserInfo)
+        
         isManager = roles.includes('Manager')
         isAdmin = roles.includes('Admin')
 

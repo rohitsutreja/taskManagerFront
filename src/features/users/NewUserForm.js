@@ -55,7 +55,7 @@ const NewUser = () => {
         if (canSave) {
             setReqStatus('pending')
             try{
-               await dispatch(addUser({ username, password, roles })).unwrap();
+                await dispatch(addUser({ username, password, roles })).unwrap();
                 navigate('/dash/users', {replace: true})
             }
             catch(error){

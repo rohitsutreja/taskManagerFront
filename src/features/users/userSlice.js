@@ -8,7 +8,7 @@ const initialState = {
 };
 
 export const getUsers = createAsyncThunk("users/getUsers", async () => {
-  const response = await api.get("http://localhost:5000/users");
+  const response = await api.get("http://localhost:5000/users/");
   return response.data;
 });
 
@@ -24,14 +24,14 @@ export const editUser = createAsyncThunk(
 );
 
 export const addUser = createAsyncThunk("users/addUser", async (user) => {
-  const response = await api.post("http://localhost:5000/users", user);
+  const response = await api.post("http://localhost:5000/users/", user);
   return response.data;
 });
 
 export const deleteUser = createAsyncThunk(
   "users/deleteUser",
   async (userId) => {
-    const response = await api.delete(`http://localhost:5000/users`, {
+    const response = await api.delete(`http://localhost:5000/users/`, {
       data: { id: userId },
     });
     console.log(response);

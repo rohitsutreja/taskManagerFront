@@ -10,9 +10,13 @@
 
 :root {
   /* COLORS */
-  --BGCOLOR: #1e3261;
+  /* --BGCOLOR: #1e3261; */
+  --BGCOLOR: rgba(45, 89, 107, 0.712);
+
   --BORDER-COLOR: #FFF;
+
   --COLOR: #FFF;
+  
   --ERROR: firebrick;
   --INACTIVE: lightgray;
   --LINK-COLOR: whitesmoke;
