@@ -9,10 +9,9 @@ import useAuth from "../../hooks/useAuth"
 const EditNoteForm = ({ note, users }) => {
   const { isManager, isAdmin } = useAuth()
 
-  // const isManager = true;
-  // const isAdmin = true;
-
-  const [updating, setUpdating] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [reqStatus, setReqStatus] = useState('idle');
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -21,49 +20,52 @@ const EditNoteForm = ({ note, users }) => {
   const [text, setText] = useState(note.text);
   const [completed, setCompleted] = useState(note.completed);
   const [userId, setUserId] = useState(note.user);
-  const [reqSent, setReqSent] = useState("idle");
+ 
 
   const onTitleChanged = (e) => setTitle(e.target.value);
   const onTextChanged = (e) => setText(e.target.value);
   const onCompletedChanged = (e) => setCompleted((prev) => !prev);
   const onUserIdChanged = (e) => setUserId(e.target.value);
 
-  const canSave = [title, text, userId].every(Boolean) && reqSent === "idle";
+  const canSave = [title, text, userId].every(Boolean) && reqStatus === "idle";
 
   const onSaveNoteClicked = async (e) => {
     if (canSave) {
       try {
-        setReqSent('pending')
-        setUpdating(true);
+        setReqStatus('pending')
         await dispatch(editNote({ id: note._id, user: userId, title, text, completed })).unwrap()
-        setUpdating(false)
         setTitle("");
         setText("");
         setUserId("");
-        navigate(-1);
+
+        navigate('/dash/notes', { replace: true })
+
       } catch(error) {
-       console.log(error.message)
+        setIsError(true)
+        setErrorMessage(error)
       }
       finally{
-        setReqSent('idle')
+        setReqStatus('idle')
       }
     }
   };
 
   const onDeleteNoteClicked = async () => {
     try {
-      setReqSent('pending')
-
+      setReqStatus('pending')
       await dispatch(deleteNote(note)).unwrap();
       setTitle("");
       setText("");
       setUserId("");
-      navigate(-1);
+
+      navigate('/dash/notes', { replace: true })
+
     } catch (error) {
-        console.log()
+      setIsError(true)
+      setErrorMessage(error)
     }
     finally{
-        setReqSent('idle')
+        setReqStatus('idle')
     }
   };
 
@@ -93,11 +95,12 @@ const EditNoteForm = ({ note, users }) => {
     );
   });
 
-//   const errClass = isError ? "errmsg" : "offscreen";
+  const errClass = isError ? "errmsg" : "offscreen";
   const validTitleClass = !title ? "form__input--incomplete" : "";
   const validTextClass = !text ? "form__input--incomplete" : "";
 
   let deleteButton = null;
+  
   if (isManager || isAdmin) {
     deleteButton = (
       <button
@@ -112,7 +115,7 @@ const EditNoteForm = ({ note, users }) => {
 
   let content = (
     <>
-      {/* <p className={errClass}>{error}</p> */}
+      <p className={errClass}>{isError?errorMessage:null}</p>
 
       <form className="form" onSubmit={(e) => e.preventDefault()}>
         <div className="form__title-row">
@@ -203,7 +206,6 @@ const EditNoteForm = ({ note, users }) => {
   );
 
 
-  if(updating) content = "Loading";
 
   return content;
 };

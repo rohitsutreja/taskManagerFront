@@ -23,9 +23,15 @@ export const editUser = createAsyncThunk(
   }
 );
 
-export const addUser = createAsyncThunk("users/addUser", async (user) => {
-  const response = await api.post("http://localhost:5000/users/", user);
-  return response.data;
+export const addUser = createAsyncThunk("users/addUser", async (user, {rejectWithValue}) => {
+  try{
+
+    const response = await api.post("http://localhost:5000/users/", user);
+    return response.data;
+  }
+  catch(error){
+    return rejectWithValue(error.response.data)
+  }
 });
 
 export const deleteUser = createAsyncThunk(
@@ -64,8 +70,7 @@ const userSlice = createSlice({
         );
       })
       .addCase(editUser.rejected, (state, action) => {
-        // Handle the error if needed
-        console.error(action.payload); // Error message from the API
+        console.error(action.payload.data); // Error message from the API
       })
       .addCase(addUser.fulfilled, (state, action) => {
         const newUser = action.payload;
@@ -73,8 +78,6 @@ const userSlice = createSlice({
         state.users.push(newUser);
       })
       .addCase(addUser.rejected, (state, action) => {
-        // Handle the error if needed
-        console.log(action.error.message); // Error message from the API
       })
       .addCase(deleteUser.fulfilled, (state, action) => {
         const deletedUserId = action.payload;
@@ -82,7 +85,6 @@ const userSlice = createSlice({
         console.log(action.payload);
       })
       .addCase(deleteUser.rejected, (state, action) => {
-        // Handle the error if needed
         console.log(action.error.message); // Error message from the API
       });
   },

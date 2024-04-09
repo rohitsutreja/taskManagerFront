@@ -20,6 +20,7 @@ import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { getUsers } from './features/users/userSlice';
 import { getNotes } from './features/notes/noteSlice';
+import PersistLogin from './features/auth/PersistLogin';
 
 
 
@@ -43,7 +44,7 @@ function App() {
         <Route path="login" element={<Login />} />
 
         {/* Protected Routes */}
-        {/* <Route element={<PersistLogin />}> */}
+        <Route element={<PersistLogin />}>
           <Route element={<RequireAuth allowedRoles={[...Object.values(ROLES)]} />}>
             {/* <Route element={<Prefetch />}> */}
               <Route path="dash" element={<DashLayout />}>
@@ -67,7 +68,7 @@ function App() {
               </Route>{/* End Dash */}
             {/* </Route> */}
           </Route>
-        {/* </Route> End Protected Routes */}
+        </Route> End Protected Routes
 
       </Route>
     </Routes >

@@ -1,19 +1,24 @@
 import { useRef, useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useDispatch} from 'react-redux'
-// import usePersist from '../../hooks/usePersist'
+import usePersist from '../../hooks/usePersist'
 // import PulseLoader from 'react-spinners/PulseLoader'
 import { logIn } from './authSlice'
 
 const Login = () => {
 
+
+    const [isError, setIsError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [reqStatus, setReqStatus] = useState('idle');
+
     const userRef = useRef()
-    // const errRef = useRef()
+    const errRef = useRef()
+
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-    const [errMsg, setErrMsg] = useState('')    
-    // const [persist, setPersist] = usePersist()
 
+    const [persist, setPersist] = usePersist()
     // const {accessToken} = useSelector(selectCurrentToken)
 
     const navigate = useNavigate()
@@ -25,37 +30,43 @@ const Login = () => {
     }, [])
 
     useEffect(() => {
-        setErrMsg('');
+        setIsError(false);
+        setErrorMessage('');
     }, [username, password])
 
 
+    const canSave = [username, password].every(Boolean) && reqStatus === "idle";
+
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        try {
-            await dispatch(logIn({username, password})).unwrap()
-            setUsername('')
-            setPassword('')
-            navigate('/dash')
-        } catch (err) {
-            if (!err.status) {
-                setErrMsg('No Server Response');
-            } else if (err.status === 400) {
-                setErrMsg('Missing Username or Password');
-            } else if (err.status === 401) {
-                setErrMsg('Unauthorized');
-            } else {
-                setErrMsg(err.data?.message);
+
+        if(canSave){
+            e.preventDefault()
+            try {
+    
+                setReqStatus('pending')
+                
+                await dispatch(logIn({username, password})).unwrap()
+    
+                setUsername('')
+                setPassword('')
+    
+                navigate('/dash')
+    
+            } catch (err) {
+                setIsError(true)
+                setErrorMessage(err)
             }
-            // errRef.current.focus()
-            console.log(errMsg)
+            finally{
+                setReqStatus('idle')
+            }
         }
     }
 
     const handleUserInput = (e) => setUsername(e.target.value)
     const handlePwdInput = (e) => setPassword(e.target.value)
-    // const handleToggle = () => setPersist(prev => !prev)
+    const handleToggle = () => setPersist(prev => !prev)
 
-    // const errClass = errMsg ? "errmsg" : "offscreen"
+    const errClass = isError ? "errmsg" : "offscreen"
 
     // if (isLoading) return <PulseLoader color={"#FFF"} />
 
@@ -65,7 +76,7 @@ const Login = () => {
                 <h1>Employee Login</h1>
             </header>
             <main className="login">
-                {/* <p ref={errRef} className={errClass} aria-live="assertive">{errMsg}</p> */}
+                <p ref={errRef} className={errClass} aria-live="assertive">{isError?errorMessage:null}</p>
 
                 <form className="form" onSubmit={handleSubmit}>
                     <label htmlFor="username">Username:</label>
@@ -92,7 +103,7 @@ const Login = () => {
                     <button className="form__submit-button">Sign In</button>
 
 
-                    {/* <label htmlFor="persist" className="form__persist">
+                    <label htmlFor="persist" className="form__persist">
                         <input
                             type="checkbox"
                             className="form__checkbox"
@@ -101,7 +112,8 @@ const Login = () => {
                             checked={persist}
                         />
                         Trust This Device
-                    </label> */}
+                    </label>
+
                 </form>
             </main>
             <footer>

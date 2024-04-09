@@ -13,6 +13,7 @@ const PWD_REGEX = /^[A-z0-9!@#$%]{4,12}$/
 const EditUser = () => {
     const [updating, setUpdating] = useState(false);
     
+    
     const dispatch = useDispatch();
     const navigate = useNavigate();
 

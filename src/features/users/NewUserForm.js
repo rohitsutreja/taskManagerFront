@@ -11,13 +11,10 @@ const PWD_REGEX = /^[A-z0-9!@#$%]{4,12}$/
 
 const NewUser = () => {
 
-
-    
-
-
     const [isError, setIsError] = useState(false);
     const [errorMessage,setErrorMessage] = useState('');
     const [reqStatus, setReqStatus] = useState('idle');
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -60,8 +57,7 @@ const NewUser = () => {
             }
             catch(error){
                 setIsError(true)
-                setErrorMessage(`${error.message}`)
-                console.log(error);
+                setErrorMessage(`${error}`)
             }
             finally{
                 setReqStatus('idle');
@@ -79,7 +75,7 @@ const NewUser = () => {
         )
     })
 
-    // const errClass = isError ? "errmsg" : "offscreen"
+    const errClass = isError ? "errmsg" : "offscreen"
     const validUserClass = !validUsername ? 'form__input--incomplete' : ''
     const validPwdClass = !validPassword ? 'form__input--incomplete' : ''
     const validRolesClass = !Boolean(roles.length) ? 'form__input--incomplete' : ''
@@ -87,7 +83,7 @@ const NewUser = () => {
 
     const content = (
         <>
-            <p>{isError?errorMessage:null}</p>
+            <p className= {errClass}>{isError?errorMessage:null}</p>
 
             <form className="form" onSubmit={onSaveUserClicked}>
                 <div className="form__title-row">

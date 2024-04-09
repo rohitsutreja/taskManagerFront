@@ -17,15 +17,27 @@ export const getNotes = createAsyncThunk("notes/getNotes", async () => {
 
 export const editNote = createAsyncThunk(
   "notes/editNote",
-  async (updatatedNoteData) => {
-    const response = await api.patch(`${URL}/notes/`, updatatedNoteData);
-    return response.data;
+  async (updatatedNoteData,{rejectWithValue}) => {
+    try{
+      const response = await api.patch(`${URL}/notes/`, updatatedNoteData);
+      return response.data;
+    }
+    catch(error){
+      return rejectWithValue(error.response.data)
+    }
+  
   }
 );
 
-export const addNote = createAsyncThunk("notes/addNote", async (note) => {
-  const response = await api.post(`${URL}/notes/`, note);
-  return response.data;
+export const addNote = createAsyncThunk("notes/addNote", async (note, {rejectWithValue}) => {
+  try{
+    const response = await api.post(`${URL}/notes/`, note);
+    return response.data;
+  }
+  catch(error){
+    return rejectWithValue(error.response.data)
+  }
+ 
 });
 
 export const deleteNote = createAsyncThunk("notes/deleteNote", async (note) => {
@@ -61,24 +73,21 @@ const noteSlice = createSlice({
         );
       })
       .addCase(editNote.rejected, (state, action) => {
-        // Handle the error if needed
-        console.log(action.payload); // Error message from the API
+        console.log(action.payload)
       })
       .addCase(addNote.fulfilled, (state, action) => {
         const newNote = action.payload;
         state.notes.push(newNote);
       })
       .addCase(addNote.rejected, (state, action) => {
-        // Handle the error if needed
-        console.log(action.payload); // Error message from the API
+        console.error(action.payload); // Error message from the API
       })
       .addCase(deleteNote.fulfilled, (state, action) => {
         const deletedNoteId = action.payload;
         state.notes = state.notes.filter((note) => note._id !== deletedNoteId);
       })
       .addCase(deleteNote.rejected, (state, action) => {
-        // Handle the error if needed
-        console.log(action.error.message); // Error message from the API
+        console.error(action.payload); // Error message from the API
       });
   },
 });

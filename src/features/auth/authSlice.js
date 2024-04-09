@@ -3,9 +3,15 @@ import api from "../../api/api";
 
 const URL = "http://localhost:5000";
 
-export const logIn = createAsyncThunk("auth/logIn", async (credentials) => {
-  const response = await api.post(`${URL}/auth/`, { ...credentials });
-  return response.data;
+export const logIn = createAsyncThunk("auth/logIn", async (credentials, {rejectWithValue}) => {
+  try{
+    const response = await api.post(`${URL}/auth/`, { ...credentials });
+    return response.data;
+  }
+  catch(error){
+    return rejectWithValue(error.response.data)
+  }
+  
 });
 
 export const logOut = createAsyncThunk("auth/logOut", async () => {
@@ -31,13 +37,14 @@ const authSlice = createSlice({
 
       })
       .addCase(logIn.rejected, (state, action) => {
+        console.log("hi")
         console.log(action.error.message);
       })
       .addCase(logOut.fulfilled, (state, action) => {
         state.token = null;
       })
       .addCase(refresh.fulfilled, (state, action) => {
-        state.token = action.payload.accessToken;
+       state.token = action.payload.accessToken;
       })
       .addCase(refresh.rejected, (state, action) => {
         console.log(action.error.message);

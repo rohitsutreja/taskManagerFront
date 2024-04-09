@@ -1,11 +1,15 @@
-import { useState} from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { useDispatch} from "react-redux"
+import { useDispatch } from "react-redux"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave } from "@fortawesome/free-solid-svg-icons"
 import { addNote } from "./noteSlice"
 
 const NewNoteForm = ({ users }) => {
+
+    const [isError, setIsError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [reqStatus, setReqStatus] = useState('idle');
 
     const dispatch = useDispatch();
     const navigate = useNavigate()
@@ -14,22 +18,29 @@ const NewNoteForm = ({ users }) => {
     const [text, setText] = useState('')
     const [userId, setUserId] = useState(users[0]._id)
 
-   
+
     const onTitleChanged = e => setTitle(e.target.value)
     const onTextChanged = e => setText(e.target.value)
     const onUserIdChanged = e => setUserId(e.target.value)
 
-    const canSave = [title, text, userId].every(Boolean)
+    const canSave = [title, text, userId].every(Boolean) && (reqStatus === 'idle')
 
     const onSaveNoteClicked = async (e) => {
         e.preventDefault()
         if (canSave) {
-        try{
-           await dispatch(addNote({ user: userId, title, text })).unwrap()
-        }catch(error){
-            console.log(error.message)
-        }
-            navigate('/dash/notes', {replace: true})
+            try {
+                await dispatch(addNote({ user: userId, title, text })).unwrap()
+                navigate('/dash/notes', { replace: true })
+            }
+            catch (error) {
+                setIsError(true)
+                setErrorMessage(error)
+
+            }
+            finally {
+                setReqStatus('idle');
+            }
+
         }
     }
 
@@ -42,13 +53,13 @@ const NewNoteForm = ({ users }) => {
         )
     })
 
-    // const errClass = isError ? "errmsg" : "offscreen"
+    const errClass = isError ? "errmsg" : "offscreen"
     const validTitleClass = !title ? "form__input--incomplete" : ''
     const validTextClass = !text ? "form__input--incomplete" : ''
 
     const content = (
         <>
-            {/* <p className={errClass}>{error?.data?.message}</p> */}
+            <p className={errClass}>{isError?errorMessage:null}</p>
 
             <form className="form" onSubmit={onSaveNoteClicked}>
                 <div className="form__title-row">
