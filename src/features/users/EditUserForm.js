@@ -5,14 +5,15 @@ import { faSave, faTrashCan } from "@fortawesome/free-solid-svg-icons"
 import { ROLES } from "../../config/roles"
 import { useSelector, useDispatch } from "react-redux"
 import { deleteUser , editUser } from "./userSlice"
-
+import PulseLoader from 'react-spinners/PulseLoader'
 
 const USER_REGEX = /^[A-z]{3,20}$/
 const PWD_REGEX = /^[A-z0-9!@#$%]{4,12}$/
 
 const EditUser = () => {
-    const [updating, setUpdating] = useState(false);
-    
+    const [reqStatus, setReqStatus] = useState(false)
+    const [isError,setIsError] = useState(false)
+    const [errorMessage,setErrorMessage] = useState('')
     
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -55,32 +56,43 @@ const EditUser = () => {
     const onSaveUserClicked = async (e) => {
         if (password) {
            try {
-            setUpdating(true)
+            setReqStatus('pending')
             await dispatch(editUser({ id: user._id, username, password, roles, active })).unwrap();
-            setUpdating(false)
             navigate(-1);
            } catch (error) {
-            console.log(error);
+            setIsError(true)
+            setErrorMessage(error)
+           }
+           finally{
+            setReqStatus('idle')
            }
         } else {
             try {
-                setUpdating(true)
+                setReqStatus('pending')
                 await dispatch(editUser({ id: user._id, username, roles, active })).unwrap();
-                setUpdating(false)
                 navigate('/dash/users')
                } catch (error) {
-                console.log(error);
+                setIsError(true)
+                setErrorMessage(error)
+               }
+               finally{
+                setReqStatus('idle')
                }
         }
     }
 
     const onDeleteUserClicked = async () => {
        try{
+        setReqStatus('pending')
         await dispatch(deleteUser(user._id)).unwrap();
         navigate(-1);
        }
        catch(error) {
-        console.log(error);
+        setIsError(true)
+        setErrorMessage(error)
+       }
+       finally{
+        setReqStatus('idle')
        }
     }
 
@@ -102,36 +114,63 @@ const EditUser = () => {
     }
 
    
+    const errClass = isError ? "errmsg" : "offscreen";
     const validUserClass = !validUsername ? 'form__input--incomplete' : ''
     const validPwdClass = password && !validPassword ? 'form__input--incomplete' : ''
     const validRolesClass = !Boolean(roles.length) ? 'form__input--incomplete' : ''
 
-   
+    let deleteButton = null;
+  
+      deleteButton = (
+        <button
+        className="icon-button"
+        title="Delete"
+        onClick={onDeleteUserClicked}
+    >
+        <FontAwesomeIcon icon={faTrashCan} />
+    </button>
+      );
+ 
+  
+    let saveButton = null;
+  
+    saveButton = ( 
+        <button
+        className="icon-button"
+        title="Save"
+        onClick={onSaveUserClicked}
+        disabled={!canSave}
+    >
+        <FontAwesomeIcon icon={faSave} />
+    </button>
+    )
+  
+    let buttonContent = null;
+  
+    if(reqStatus === 'pending'){
+      buttonContent = <PulseLoader color={"#FFF"} />
+    }
+    else{
+      buttonContent = (
+        <>
+            {saveButton}
+            {deleteButton}
+        </>
+    )
+    }
+  
 
 
     let content = (
         <>
-
+            <p className={errClass}>{isError?errorMessage:null}</p>
 
             <form className="form" onSubmit={e => e.preventDefault()}>
                 <div className="form__title-row">
                     <h2>Edit User</h2>
                     <div className="form__action-buttons">
-                        <button
-                            className="icon-button"
-                            title="Save"
-                            onClick={onSaveUserClicked}
-                            disabled={!canSave}
-                        >
-                            <FontAwesomeIcon icon={faSave} />
-                        </button>
-                        <button
-                            className="icon-button"
-                            title="Delete"
-                            onClick={onDeleteUserClicked}
-                        >
-                            <FontAwesomeIcon icon={faTrashCan} />
-                        </button>
+                        
+                       {buttonContent}
                     </div>
                 </div>
                 <label className="form__label" htmlFor="username">
@@ -186,8 +225,6 @@ const EditUser = () => {
             </form>
         </>
     )
-
-    if(updating) content = "Loading"
 
     return content
 }

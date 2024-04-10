@@ -8,15 +8,15 @@
 
 /* || VARIABLES */
 
+
+
 :root {
   /* COLORS */
-  /* --BGCOLOR: #1e3261; */
-  --BGCOLOR: rgba(45, 89, 107, 0.712);
 
+  /* --BGCOLOR: rgba(45, 89, 107, 0.712); */
+  --BGCOLOR: #0F172A;
   --BORDER-COLOR: #FFF;
-
   --COLOR: #FFF;
-  
   --ERROR: firebrick;
   --INACTIVE: lightgray;
   --LINK-COLOR: whitesmoke;
@@ -26,6 +26,7 @@
   --STATUS-OPEN: firebrick;
   --TABLE-BGCOLOR: #FFF;
   --TABLE-COLOR: #000;
+  --INPUT-INVALID: #F00;
 }
 
 /* || UTILITY CLASSES */
@@ -35,6 +36,11 @@
   color: var(--ERROR);
   padding: 0.25em;
   margin-bottom: 0.5em;
+}
+
+.errmsg a:any-link {
+  color: var(--ERROR);
+  text-decoration: underline;
 }
 
 .nowrap {
@@ -68,7 +74,7 @@ body {
   min-height: 100vh;
   background-color: var(--BGCOLOR);
   color: var(--COLOR);
-  background-image: url('./img/123.jpg');
+  background-image: url('./img/background.jpg');
   background-size: cover;
   background-position: top right;
   background-blend-mode: multiply;
@@ -92,8 +98,7 @@ a {
   text-decoration: none;
 }
 
-a,
-a:visited {
+a:any-link {
   color: var(--LINK-COLOR);
 }
 
@@ -150,6 +155,10 @@ a:focus-visible {
   align-items: center;
 }
 
+.dash-header__container--small {
+  max-width: 800px;
+}
+
 .dash-header__nav {
   display: flex;
   flex-flow: row nowrap;
@@ -181,7 +190,6 @@ a:focus-visible {
   width: auto;
   height: auto;
 }
-
 
 /* || TABLES - GENERAL */
 
@@ -290,10 +298,9 @@ tr {
 }
 
 .form__input--incomplete {
-  border: 1px solid red;
-  outline: 1px solid red;
+  border: 1px solid var(--INPUT-INVALID);
+  outline: 1px solid var(--INPUT-INVALID);
 }
-
 
 .form__checkbox {
   width: 24px;
@@ -339,6 +346,7 @@ tr {
     font-size: 1.5rem;
   }
 }
+
 
 @media screen and (min-width: 768px) {
 

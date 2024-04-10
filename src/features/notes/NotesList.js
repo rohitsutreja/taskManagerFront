@@ -3,6 +3,7 @@ import Note from "./Note";
 import { getNotes } from "./noteSlice";
 import { useDispatch, useSelector } from "react-redux";
 import useAuth from "../../hooks/useAuth";
+import PulseLoader from 'react-spinners/PulseLoader'
 
 const NotesList = () => {
   const dispatch = useDispatch();
@@ -30,9 +31,7 @@ const NotesList = () => {
     content = <p>Error</p>;
   }
 
-  if (isLoading) content = <p>Loading...</p>;
-
-  console.log(isLoading);
+  if (isLoading) content =<PulseLoader color={"#FFF"} />
 
   if (isSuccess) {
 

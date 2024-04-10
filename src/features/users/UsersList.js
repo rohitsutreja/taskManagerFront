@@ -2,6 +2,7 @@ import User from "./User";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getUsers } from "./userSlice";
+import PulseLoader from 'react-spinners/PulseLoader'
 
 const UsersList = () => {
   const { isLoading, users } = useSelector((state) => state.users);
@@ -18,7 +19,7 @@ const UsersList = () => {
   let content;
 
   if (isLoading) {
-    content = <p>Loading...</p>;
+    content = <PulseLoader color={"#FFF"} />
   } else {
     content = (
       <table className="table table--users">

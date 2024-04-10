@@ -36,12 +36,18 @@ export const addUser = createAsyncThunk("users/addUser", async (user, {rejectWit
 
 export const deleteUser = createAsyncThunk(
   "users/deleteUser",
-  async (userId) => {
-    const response = await api.delete(`http://localhost:5000/users/`, {
-      data: { id: userId },
-    });
-    console.log(response);
-    return response.data;
+  async (userId, {rejectWithValue}) => {
+
+    try{
+      const response = await api.delete(`http://localhost:5000/users/`, {
+        data: { id: userId },
+      });
+      return response.data;
+    }
+    catch(error){
+      return rejectWithValue(error.response.data)
+    }
+   
   }
 );
 

@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSave } from "@fortawesome/free-solid-svg-icons"
 import { addNote } from "./noteSlice"
+import PulseLoader from 'react-spinners/PulseLoader'
 
 const NewNoteForm = ({ users }) => {
 
@@ -65,13 +66,13 @@ const NewNoteForm = ({ users }) => {
                 <div className="form__title-row">
                     <h2>New Note</h2>
                     <div className="form__action-buttons">
-                        <button
+                       {reqStatus === 'pending' ? <PulseLoader color={"#FFF"} /> :  <button
                             className="icon-button"
                             title="Save"
                             disabled={!canSave}
                         >
                             <FontAwesomeIcon icon={faSave} />
-                        </button>
+                        </button>}
                     </div>
                 </div>
                 <label className="form__label" htmlFor="title">

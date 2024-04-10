@@ -5,6 +5,8 @@ import { faSave } from "@fortawesome/free-solid-svg-icons"
 import { ROLES } from "../../config/roles"
 import {useDispatch } from "react-redux"
 import { addUser } from "./userSlice"
+import PulseLoader from 'react-spinners/PulseLoader'
+
 
 const USER_REGEX = /^[A-z]{3,20}$/
 const PWD_REGEX = /^[A-z0-9!@#$%]{4,12}$/
@@ -89,13 +91,15 @@ const NewUser = () => {
                 <div className="form__title-row">
                     <h2>New User</h2>
                     <div className="form__action-buttons">
-                        <button
+                       {
+                       reqStatus ==='pending' ? <PulseLoader color={"#FFF"} /> :  <button
                             className="icon-button"
                             title="Save"
                             disabled={!canSave}
                         >
                             <FontAwesomeIcon icon={faSave} />
                         </button>
+                        }
                     </div>
                 </div>
                 <label className="form__label" htmlFor="username">

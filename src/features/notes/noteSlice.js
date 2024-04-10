@@ -40,10 +40,17 @@ export const addNote = createAsyncThunk("notes/addNote", async (note, {rejectWit
  
 });
 
-export const deleteNote = createAsyncThunk("notes/deleteNote", async (note) => {
-    console.log(note._id+ "123456")
+export const deleteNote = createAsyncThunk("notes/deleteNote", async (note, {rejectWithValue}) => {
+
+  try{
     const response = await api.delete(`${URL}/notes/`, {data:{ id : note._id}});
     return response.data;
+  }
+  catch(error){
+    return rejectWithValue(error.response.data)
+  }
+
+   
   });
 
 const noteSlice = createSlice({

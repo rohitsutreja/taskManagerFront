@@ -5,6 +5,7 @@ import { faSave, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { editNote, deleteNote } from "./noteSlice";
 import { useDispatch } from "react-redux";
 import useAuth from "../../hooks/useAuth"
+import PulseLoader from 'react-spinners/PulseLoader'
 
 const EditNoteForm = ({ note, users }) => {
   const { isManager, isAdmin } = useAuth()
@@ -69,7 +70,7 @@ const EditNoteForm = ({ note, users }) => {
     }
   };
 
-  const created = new Date(note.createdAt).toLocaleString("en-US", {
+  const created = new Date(note.createdAt).toLocaleString("en-IN", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -77,7 +78,9 @@ const EditNoteForm = ({ note, users }) => {
     minute: "numeric",
     second: "numeric",
   });
-  const updated = new Date(note.updatedAt).toLocaleString("en-US", {
+
+
+  const updated = new Date(note.updatedAt).toLocaleString("en-IN", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -95,6 +98,8 @@ const EditNoteForm = ({ note, users }) => {
     );
   });
 
+  
+
   const errClass = isError ? "errmsg" : "offscreen";
   const validTitleClass = !title ? "form__input--incomplete" : "";
   const validTextClass = !text ? "form__input--incomplete" : "";
@@ -106,6 +111,7 @@ const EditNoteForm = ({ note, users }) => {
       <button
         className="icon-button"
         title="Delete"
+        disabled={!canSave}
         onClick={onDeleteNoteClicked}
       >
         <FontAwesomeIcon icon={faTrashCan} />
@@ -113,23 +119,45 @@ const EditNoteForm = ({ note, users }) => {
     );
   }
 
+  let saveButton = null;
+
+  saveButton = ( 
+  <button
+    className="icon-button"
+    title="Save"
+    onClick={onSaveNoteClicked}
+    disabled={!canSave}
+  >
+    <FontAwesomeIcon icon={faSave} />
+  </button>
+  )
+
+  let buttonContent = null;
+
+  if(reqStatus === 'pending'){
+    buttonContent = <PulseLoader color={"#FFF"} />
+  }
+  else{
+    buttonContent = (
+      <>
+          {saveButton}
+          {deleteButton}
+      </>
+  )
+  }
+
+  
+
+
   let content = (
     <>
       <p className={errClass}>{isError?errorMessage:null}</p>
 
       <form className="form" onSubmit={(e) => e.preventDefault()}>
         <div className="form__title-row">
-          <h2>Edit Note #{note.ticket}</h2>
+          <h2>Edit Note</h2>
           <div className="form__action-buttons">
-            <button
-              className="icon-button"
-              title="Save"
-              onClick={onSaveNoteClicked}
-              disabled={!canSave}
-            >
-              <FontAwesomeIcon icon={faSave} />
-            </button>
-            {deleteButton}
+             {buttonContent}
           </div>
         </div>
         <label className="form__label" htmlFor="note-title">
